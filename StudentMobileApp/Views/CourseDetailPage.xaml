@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="StudentMobileApp.Views.CourseDetailPage"
+             Title="Course Details">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            
+            <Label x:Name="CourseTitleLabel"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+            <Label x:Name="StatusLabel" />
+            <Label x:Name="StartDateLabel" />
+            <Label x:Name="EndDateLabel" />
+            <Label Text="Instructor Info:" FontAttributes="Bold" />
+            <Label x:Name="InstructorNameLabel" />
+            <Label x:Name="InstructorPhoneLabel" />
+            <Label x:Name="InstructorEmailLabel" />
+
+            
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <Button Text="Edit Course" Clicked="OnEditCourseClicked" />
+                <Button Text="Delete Course" Clicked="OnDeleteCourseClicked" />
+            </HorizontalStackLayout>
+
+           
+            <Label Text="Assessments"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,15,0,5" />
+
+            <Button Text="+ Add Assessment"
+                    Clicked="OnAddAssessmentClicked"
+                    HorizontalOptions="Center" />
+
+            <CollectionView x:Name="AssessmentsCollection">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="0,5"
+                               BorderColor="LightGray"
+                               CornerRadius="8"
+                               HasShadow="False">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" FontAttributes="Bold" />
+                                <Label Text="{Binding Type}" />
+                                <Label Text="{Binding StartDate, StringFormat='Start: {0:MM/dd/yyyy}'}" />
+                                <Label Text="{Binding EndDate, StringFormat='End: {0:MM/dd/yyyy}'}" />
+                            </VerticalStackLayout>
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    CommandParameter="{Binding Id}"
+                                    Tapped="OnAssessmentTapped" />
+                            </Frame.GestureRecognizers>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+           
+            <Label Text="Course Notes" FontAttributes="Bold" Margin="0,15,0,5" />
+            <Editor x:Name="NotesEditor"
+                    Placeholder="Enter notes here..."
+                    AutoSize="TextChanges"
+                    HeightRequest="100" />
+            <Button Text="Save Notes" Clicked="OnSaveNotesClicked" />
+            <Button Text="Share Notes" Clicked="OnShareNotesClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

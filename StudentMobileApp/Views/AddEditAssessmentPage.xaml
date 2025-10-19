@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="StudentMobileApp.Views.AddEditAssessmentPage"
+             Title="Add / Edit Assessment">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Assessment Details"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Entry x:Name="TitleEntry"
+                   Placeholder="Assessment Title" />
+
+            <Picker x:Name="TypePicker"
+                    Title="Select Type">
+                <Picker.Items>
+                    <x:String>Performance</x:String>
+                    <x:String>Objective</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <Label Text="Start Date" />
+            <DatePicker x:Name="StartDatePicker" />
+
+            <Label Text="End Date" />
+            <DatePicker x:Name="EndDatePicker" />
+
+            <HorizontalStackLayout Spacing="15">
+                <Button Text="Save" Clicked="OnSaveClicked" />
+                <Button Text="Cancel" Clicked="OnCancelClicked" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+
