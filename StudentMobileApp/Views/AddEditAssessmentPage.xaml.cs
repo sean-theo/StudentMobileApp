@@ -1,128 +1,87 @@
 using StudentMobileApp.Data;
 using StudentMobileApp.Models;
-using Plugin.LocalNotification;
 
-namespace StudentMobileApp.Views;
-
-[QueryProperty(nameof(CourseId), "courseId")]
-[QueryProperty(nameof(AssessmentId), "assessmentId")]
-public partial class AddEditAssessmentPage : ContentPage
+namespace StudentMobileApp.Views
 {
-    public int CourseId { get; set; }
-    public int AssessmentId { get; set; }
-
-    public AddEditAssessmentPage()
+    [QueryProperty(nameof(CourseId), "courseId")]
+    public partial class AddEditAssessmentPage : ContentPage
     {
-        InitializeComponent();
-    }
+        public int CourseId { get; set; }
+        private Assessment _assessment;
+        private bool _isEditing;
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-
-        if (AssessmentId > 0)
+        public AddEditAssessmentPage()
         {
-            var assessment = AppData.GetAssessmentById(AssessmentId);
-            if (assessment != null)
+            InitializeComponent();
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            _isEditing = _assessment != null && _assessment.Id != 0;
+        }
+
+        private async void OnSaveClicked(object sender, EventArgs e)
+        {
+            string title = TitleEntry.Text?.Trim();
+            string type = TypePicker.SelectedItem?.ToString();
+            DateTime startDate = StartDatePicker.Date;
+            DateTime endDate = EndDatePicker.Date;
+
+            // ===== VALIDATION =====
+            if (!ValidationHelper.IsNotEmpty(title))
             {
-                TitleEntry.Text = assessment.Title;
-                TypePicker.SelectedItem = assessment.Type;
-                StartDatePicker.Date = assessment.StartDate;
-                EndDatePicker.Date = assessment.EndDate;
+                await DisplayAlert("Validation Error", "Please enter an assessment title.", "OK");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                await DisplayAlert("Validation Error", "Please select an assessment type.", "OK");
+                return;
+            }
+
+            if (!ValidationHelper.IsDateRangeValid(startDate, endDate))
+            {
+                await DisplayAlert("Validation Error", "End date must be on or after the start date.", "OK");
+                return;
+            }
+
+            // ===== CREATE OR UPDATE =====
+            if (_assessment == null)
+                _assessment = new Assessment();
+
+            _assessment.Title = title;
+            _assessment.Type = type;
+            _assessment.StartDate = startDate;
+            _assessment.EndDate = endDate;
+            _assessment.CourseId = CourseId;
+
+            if (_isEditing)
+                await Database.UpdateAssessmentAsync(_assessment);
+            else
+                await Database.AddAssessmentAsync(_assessment);
+
+            await DisplayAlert("Success", $"Assessment \"{_assessment.Title}\" saved successfully.", "OK");
+            await Shell.Current.GoToAsync("..");
+        }
+
+        private async void OnDeleteClicked(object sender, EventArgs e)
+        {
+            if (_assessment == null) return;
+
+            bool confirm = await DisplayAlert("Confirm", "Are you sure you want to delete this assessment?", "Yes", "No");
+            if (confirm)
+            {
+                await Database.DeleteAssessmentAsync(_assessment);
+                await DisplayAlert("Deleted", "The assessment was successfully deleted.", "OK");
+                await Shell.Current.GoToAsync("..");
             }
         }
-    }
 
-    private async void OnSaveClicked(object sender, EventArgs e)
-    {
-        if (string.IsNullOrEmpty(TitleEntry.Text) || TypePicker.SelectedItem == null)
+        private async void OnCancelClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("Error", "Please fill all required fields.", "OK");
-            return;
+            await Shell.Current.GoToAsync("..");
         }
-
-        if (StartDatePicker.Date > EndDatePicker.Date)
-        {
-            await DisplayAlert("Error", "End date cannot be before start date", "OK");
-            return;
-        }
-
-        Assessment newAssessment = new()
-        {
-            CourseId = CourseId,
-            Title = TitleEntry.Text,
-            Type = TypePicker.SelectedItem.ToString(),
-            StartDate = StartDatePicker.Date,
-            EndDate = EndDatePicker.Date
-        };
-
-        // --- Limit: one Performance & one Objective per course ---
-        var existing = AppData.GetAssessmentsForCourse(CourseId);
-        if (existing.Any(a => a.Type == newAssessment.Type && a.Id != AssessmentId))
-        {
-            await DisplayAlert("Limit Reached",
-                $"This course already has a {newAssessment.Type} assessment.",
-                "OK");
-            return;
-        }
-
-        if (AssessmentId == 0)
-            AppData.AddAssessment(newAssessment);
-        else
-            AppData.UpdateAssessment(newAssessment);
-
-        // --- Notifications ---
-        if (newAssessment.StartDate == DateTime.Today)
-        {
-            await LocalNotificationCenter.Current.Show(new NotificationRequest
-            {
-                NotificationId = new Random().Next(3000, 3999),
-                Title = "Assessment Starts Today",
-                Description = $"{newAssessment.Title} ({newAssessment.Type}) begins today."
-            });
-        }
-        else
-        {
-            await LocalNotificationCenter.Current.Show(new NotificationRequest
-            {
-                NotificationId = new Random().Next(3000, 3999),
-                Title = "Upcoming Assessment",
-                Description = $"{newAssessment.Title} starts soon.",
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = newAssessment.StartDate.AddHours(9)
-                }
-            });
-        }
-
-        if (newAssessment.EndDate == DateTime.Today)
-        {
-            await LocalNotificationCenter.Current.Show(new NotificationRequest
-            {
-                NotificationId = new Random().Next(4000, 4999),
-                Title = "Assessment Ends Today",
-                Description = $"{newAssessment.Title} ({newAssessment.Type}) ends today."
-            });
-        }
-        else
-        {
-            await LocalNotificationCenter.Current.Show(new NotificationRequest
-            {
-                NotificationId = new Random().Next(4000, 4999),
-                Title = "Assessment Ending Soon",
-                Description = $"{newAssessment.Title} ends soon.",
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = newAssessment.EndDate.AddHours(9)
-                }
-            });
-        }
-
-        await Shell.Current.GoToAsync("..");
-    }
-
-    private async void OnCancelClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("..");
     }
 }

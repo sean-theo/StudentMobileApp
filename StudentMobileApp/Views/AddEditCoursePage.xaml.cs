@@ -1,150 +1,112 @@
 using StudentMobileApp.Data;
 using StudentMobileApp.Models;
-using Plugin.LocalNotification;
 
-namespace StudentMobileApp.Views;
-
-[QueryProperty(nameof(CourseId), "courseId")]
-[QueryProperty(nameof(TermId), "termId")]
-public partial class AddEditCoursePage : ContentPage
+namespace StudentMobileApp.Views
 {
-	public int CourseId { get; set; }
-	public int TermId { get; set; }
+    [QueryProperty(nameof(TermId), "termId")]
+    public partial class AddEditCoursePage : ContentPage
+    {
+        public int TermId { get; set; }
+        private Course _course;
+        private bool _isEditing;
 
-	public AddEditCoursePage()
-	{
-		InitializeComponent();
-	}
+        public AddEditCoursePage()
+        {
+            InitializeComponent();
+        }
 
-    protected override void OnAppearing()
-	{
-		base.OnAppearing();
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            _isEditing = _course != null && _course.Id != 0;
+        }
 
-		if (CourseId > 0)
-		{
-			Course course = AppData.GetCourseById(CourseId);
-			if (course != null)
-			{
-				CourseTitleEntry.Text = course.CourseTitle;
-				StartDatePicker.Date = course.StartDate;
-				EndDatePicker.Date = course.EndDate;
-				StatusPicker.SelectedItem = course.Status;
-				InstructorNameEntry.Text = course.InstructorName;
-				InstructorPhoneEntry.Text = course.InstructorPhone;
-				InstructorEmailEntry.Text = course.InstructorEmail;
-			}
-		}
-	}
+        private async void OnSaveClicked(object sender, EventArgs e)
+        {
+            string title = CourseTitleEntry.Text?.Trim();
+            string instructorName = InstructorNameEntry.Text?.Trim();
+            string instructorPhone = InstructorPhoneEntry.Text?.Trim();
+            string instructorEmail = InstructorEmailEntry.Text?.Trim();
+            DateTime startDate = StartDatePicker.Date;
+            DateTime endDate = EndDatePicker.Date;
+            string status = StatusPicker.SelectedItem?.ToString();
 
-	private async void OnSaveClicked(object sender, EventArgs e)
-	{
-		//Check for empty title
-		if (string.IsNullOrEmpty(CourseTitleEntry.Text))
-		{
-			await DisplayAlert("Error", "Please enter a course title", "OK");
-			return;
-		}
-
-		//Verify date fields
-		if (StartDatePicker.Date > EndDatePicker.Date)
-		{
-			await DisplayAlert("Error", "End date cannot be before start date", "OK");
-			return;
-		}
-
-		//Check instructor information
-		if (string.IsNullOrEmpty(InstructorNameEntry.Text) || string.IsNullOrEmpty(InstructorPhoneEntry.Text) || string.IsNullOrEmpty(InstructorEmailEntry.Text))
-		{
-			await DisplayAlert("Error", "Please fill in any missing instructor details", "OK");
-			return;
-		}
-
-		//Ensure that email is valid
-		if (!(InstructorEmailEntry.Text.Contains('@') && InstructorEmailEntry.Text.Contains('.')))
-		{
-			await DisplayAlert("Error", "Invalid email address", "OK");
-			return;
-		}
-
-		if (CourseId == 0)
-		{
-            var coursesForTerm = AppData.GetCoursesForTerm(TermId);
-
-            if (coursesForTerm.Count >= 6)
+            // ===== VALIDATION =====
+            if (!ValidationHelper.IsNotEmpty(title))
             {
-                await DisplayAlert("Limit Reached", "You can only add up to six courses per term.", "OK");
+                await DisplayAlert("Validation Error", "Course title is required.", "OK");
                 return;
             }
 
-            Course newCourse = new()
-			{
-				CourseTitle = CourseTitleEntry.Text,
-				TermId = TermId,
-				StartDate = StartDatePicker.Date,
-				EndDate = EndDatePicker.Date,
-				Status = StatusPicker.SelectedItem?.ToString(),
-				InstructorName = InstructorNameEntry.Text,
-				InstructorPhone = InstructorPhoneEntry.Text,
-				InstructorEmail = InstructorEmailEntry.Text,
-			};
-			AppData.AddCourse(newCourse);
-		}
-		else
-		{
-			Course course = AppData.GetCourseById(CourseId);
-			if (course != null)
-			{
-				course.CourseTitle = CourseTitleEntry.Text;
-				course.StartDate = StartDatePicker.Date;
-				course.EndDate = EndDatePicker.Date;
-				course.Status = StatusPicker.SelectedItem?.ToString();
-				course.InstructorName = InstructorNameEntry.Text;
-				course.InstructorPhone = InstructorPhoneEntry.Text;
-				course.InstructorEmail = InstructorEmailEntry.Text;
-
-				AppData.UpdateCourse(course);
-			}
-		}
-
-        //time notifications
-        DateTime today = DateTime.Today;
-
-        if (StartDatePicker.Date.Date == today)
-        {
-            var startNotification = new NotificationRequest
+            if (!ValidationHelper.IsDateRangeValid(startDate, endDate))
             {
-                NotificationId = new Random().Next(1000, 9999),
-                Title = "Course Starting Today",
-                Description = $"Your course {CourseTitleEntry.Text} starts today!",
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = DateTime.Now.AddSeconds(5)
-                }
-            };
-            await LocalNotificationCenter.Current.Show(startNotification);
+                await DisplayAlert("Validation Error", "End date must be on or after the start date.", "OK");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(status))
+            {
+                await DisplayAlert("Validation Error", "Please select a course status.", "OK");
+                return;
+            }
+
+            if (!ValidationHelper.IsNotEmpty(instructorName))
+            {
+                await DisplayAlert("Validation Error", "Instructor name is required.", "OK");
+                return;
+            }
+
+            if (!ValidationHelper.IsValidPhone(instructorPhone))
+            {
+                await DisplayAlert("Validation Error", "Please enter a valid phone number (e.g., 555-123-4567).", "OK");
+                return;
+            }
+
+            if (!ValidationHelper.IsValidEmail(instructorEmail))
+            {
+                await DisplayAlert("Validation Error", "Please enter a valid instructor email address.", "OK");
+                return;
+            }
+
+            // ===== CREATE OR UPDATE =====
+            if (_course == null)
+                _course = new Course();
+
+            _course.CourseTitle = title;
+            _course.StartDate = startDate;
+            _course.EndDate = endDate;
+            _course.Status = status;
+            _course.InstructorName = instructorName;
+            _course.InstructorPhone = instructorPhone;
+            _course.InstructorEmail = instructorEmail;
+            _course.Notes = NotesEditor.Text?.Trim();
+            _course.TermId = TermId;
+
+            if (_isEditing)
+                await Database.UpdateCourseAsync(_course);
+            else
+                await Database.AddCourseAsync(_course);
+
+            await DisplayAlert("Success", $"Course \"{_course.CourseTitle}\" saved successfully.", "OK");
+            await Shell.Current.GoToAsync("..");
         }
 
-        if (EndDatePicker.Date.Date == today)
+        private async void OnDeleteClicked(object sender, EventArgs e)
         {
-            var endNotification = new NotificationRequest
+            if (_course == null) return;
+
+            bool confirm = await DisplayAlert("Confirm", "Are you sure you want to delete this course?", "Yes", "No");
+            if (confirm)
             {
-                NotificationId = new Random().Next(10000, 19999),
-                Title = "Course Ending Today",
-                Description = $"Your course {CourseTitleEntry.Text} ends today!",
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = DateTime.Now.AddSeconds(10)
-                }
-            };
-            await LocalNotificationCenter.Current.Show(endNotification);
+                await Database.DeleteCourseAsync(_course);
+                await DisplayAlert("Deleted", "The course was successfully deleted.", "OK");
+                await Shell.Current.GoToAsync("..");
+            }
         }
 
-        await Shell.Current.GoToAsync("..");
+        private async void OnCancelClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("..");
+        }
     }
-
-    private async void OnCancelClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("..");
-    }
-
 }
