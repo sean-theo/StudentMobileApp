@@ -6,7 +6,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="12">
             <Label 
-                Text="Course Detials"
+                Text="Course Details"
                 FontSize="22" 
                 FontAttributes="Bold"
                 HorizontalOptions="Center" />
@@ -41,11 +41,16 @@
             <Label Text="Instructor Email" />
             <Entry x:Name="InstructorEmailEntry" Placeholder="e.g., instructor@school.edu" Keyboard="Email" />
 
+            <Label Text="Notes" />
+            <Editor x:Name="NotesEditor"
+                    Placeholder="Optional notes about the course"
+                    AutoSize="TextChanges"
+                    HeightRequest="100" />
+
             <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
                 <Button Text="Save" Clicked="OnSaveClicked" />
                 <Button Text="Cancel" Clicked="OnCancelClicked" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
-    
 </ContentPage>

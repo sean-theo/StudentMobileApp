@@ -11,12 +11,35 @@ namespace StudentMobileApp
         public App()
         {
             InitializeComponent();
-            MainPage = new AppShell();
 
-            SeedDemoData(); // ✅ Add this line
+            bool isLoggedIn = Preferences.Get("isLoggedIn", false);
+
+            if (isLoggedIn)
+                MainPage = new AppShell();
+            else
+                MainPage = new NavigationPage(new Views.LoginPage());
         }
 
-        private void SeedDemoData()
+        private async void InitializeDatabase()
+        {
+            try
+            {
+                await Data.Database.Init();
+
+                // Clean up any orphaned assessments (one-time maintenance)
+                await Data.Database.CleanupOrphanedAssessmentsAsync();
+
+                System.Diagnostics.Debug.WriteLine("Database initialized and cleaned successfully.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Database initialization failed: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Failed to initialize database.", "OK");
+            }
+        }
+
+
+        /*private void SeedDemoData()
         {
             if (AppData.Terms.Count == 0)
             {
@@ -70,6 +93,7 @@ namespace StudentMobileApp
                 AppData.AddAssessment(assessment2);
             }
         }
+        */
 
     }
 }

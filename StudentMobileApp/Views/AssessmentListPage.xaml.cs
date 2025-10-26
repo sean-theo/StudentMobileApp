@@ -13,11 +13,13 @@ public partial class AssessmentListPage : ContentPage
         InitializeComponent();
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
 
-        var assessments = AppData.GetAssessmentsForCourse(CourseId);
+        if (CourseId == 0) return;
+
+        var assessments = await Database.GetAssessmentsByCourseAsync(CourseId);
         AssessmentsCollection.ItemsSource = assessments;
     }
 

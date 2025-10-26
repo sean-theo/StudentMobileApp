@@ -1,90 +1,115 @@
 using StudentMobileApp.Data;
 using StudentMobileApp.Models;
 
-namespace StudentMobileApp.Views;
-
-[QueryProperty(nameof(CourseId), "courseId")]
-public partial class CourseDetailPage : ContentPage
+namespace StudentMobileApp.Views
 {
-    public int CourseId { get; set; }
-
-    private Course currentCourse;
-
-    public CourseDetailPage()
+    [QueryProperty(nameof(CourseId), "courseId")]
+    public partial class CourseDetailPage : ContentPage
     {
-        InitializeComponent();
-    }
+        public int CourseId { get; set; }
+        private Course _course;
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-
-        
-        currentCourse = AppData.GetCourseById(CourseId);
-
-        if (currentCourse != null)
+        public CourseDetailPage()
         {
-            CourseTitleLabel.Text = currentCourse.CourseTitle;
-            StatusLabel.Text = $"Status: {currentCourse.Status}";
-            StartDateLabel.Text = $"Start: {currentCourse.StartDate:MM/dd/yyyy}";
-            EndDateLabel.Text = $"End: {currentCourse.EndDate:MM/dd/yyyy}";
+            InitializeComponent();
+        }
 
-            InstructorNameLabel.Text = $"Name: {currentCourse.InstructorName}";
-            InstructorPhoneLabel.Text = $"Phone: {currentCourse.InstructorPhone}";
-            InstructorEmailLabel.Text = $"Email: {currentCourse.InstructorEmail}";
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
 
-            // Load assessments linked to this course
-            var assessments = AppData.GetAssessmentsForCourse(CourseId);
+            if (CourseId == 0)
+                return;
+
+            //Load the selected course from the database
+            var allCourses = await Database.GetCoursesAsync();
+            _course = allCourses.FirstOrDefault(c => c.Id == CourseId);
+
+            if (_course == null)
+            {
+                await DisplayAlert("Error", "Course not found.", "OK");
+                await Shell.Current.GoToAsync("..");
+                return;
+            }
+
+            //Display course details
+            CourseTitleLabel.Text = _course.CourseTitle;
+            StatusLabel.Text = _course.Status;
+            InstructorNameLabel.Text = _course.InstructorName;
+            InstructorPhoneLabel.Text = _course.InstructorPhone;
+            InstructorEmailLabel.Text = _course.InstructorEmail;
+            NotesEditor.Text = _course.Notes;
+
+            //Load assessments for this course
+            var assessments = await Database.GetAssessmentsByCourseAsync(_course.Id);
             AssessmentsCollection.ItemsSource = assessments;
         }
-    }
 
-    private async void OnAddAssessmentClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync($"{nameof(AddEditAssessmentPage)}?courseId={CourseId}");
-    }
-
-    private async void OnAssessmentTapped(object sender, TappedEventArgs e)
-    {
-        int assessmentId = (int)e.Parameter;
-        await Shell.Current.GoToAsync($"{nameof(AddEditAssessmentPage)}?assessmentId={assessmentId}&courseId={CourseId}");
-    }
-
-    private async void OnEditCourseClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync($"{nameof(AddEditCoursePage)}?courseId={CourseId}&termId={currentCourse.TermId}");
-    }
-
-    private async void OnDeleteCourseClicked(object sender, EventArgs e)
-    {
-        bool confirm = await DisplayAlert("Confirm", "Are you sure you want to delete this course?", "Yes", "No");
-        if (confirm)
+        private async void OnEditCourseClicked(object sender, EventArgs e)
         {
-            AppData.DeleteCourse(CourseId);
-            await Shell.Current.GoToAsync("..");
+            if (_course == null)
+                return;
+
+            await Shell.Current.GoToAsync($"{nameof(AddEditCoursePage)}?courseId={_course.Id}");
         }
-    }
 
-    private void OnSaveNotesClicked(object sender, EventArgs e)
-    {
-        
-        currentCourse.Notes = NotesEditor.Text;
-        DisplayAlert("Saved", "Notes saved successfully.", "OK");
-    }
-
-    private async void OnShareNotesClicked(object sender, EventArgs e)
-    {
-        if (!string.IsNullOrWhiteSpace(NotesEditor.Text))
+        private async void OnDeleteCourseClicked(object sender, EventArgs e)
         {
-            await Share.Default.RequestAsync(new ShareTextRequest
+            if (_course == null)
+                return;
+
+            bool confirm = await DisplayAlert("Confirm", "Delete this course?", "Yes", "No");
+            if (confirm)
             {
-                Text = NotesEditor.Text,
-                Title = "Share Course Notes"
-            });
+                await Database.DeleteCourseAsync(_course);
+                await Shell.Current.GoToAsync("..");
+            }
         }
-        else
+
+        private async void OnAddAssessmentClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("No Notes", "There are no notes to share.", "OK");
+            if (_course == null)
+                return;
+
+            await Shell.Current.GoToAsync($"{nameof(AddEditAssessmentPage)}?courseId={_course.Id}");
+        }
+
+        private async void OnAssessmentTapped(object sender, EventArgs e)
+        {
+            // Determine which assessment was tapped
+            if (sender is Frame frame && frame.BindingContext is Assessment selectedAssessment)
+            {
+                await Shell.Current.GoToAsync($"{nameof(AddEditAssessmentPage)}?courseId={selectedAssessment.CourseId}");
+            }
+        }
+
+        private async void OnSaveNotesClicked(object sender, EventArgs e)
+        {
+            if (_course == null)
+                return;
+
+            _course.Notes = NotesEditor.Text?.Trim();
+            await Database.UpdateCourseAsync(_course);
+
+            await DisplayAlert("Saved", "Notes updated successfully.", "OK");
+        }
+        private async void OnShareNotesClicked(object sender, EventArgs e)
+        {
+            if (_course == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(_course.Notes))
+            {
+                await DisplayAlert("No Notes", "There are no notes to share.", "OK");
+                return;
+            }
+
+            // Use the built-in MAUI Share API
+            await Share.RequestAsync(new ShareTextRequest
+            {
+                Text = _course.Notes,
+                Title = $"Share Notes for {_course.CourseTitle}"
+            });
         }
     }
 }

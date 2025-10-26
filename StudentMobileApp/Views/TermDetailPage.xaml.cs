@@ -7,32 +7,38 @@ namespace StudentMobileApp.Views;
 public partial class TermDetailPage : ContentPage
 {
 	public int TermId { get; set; }
+    private Term _term;
 
 	public TermDetailPage()
 	{
 		InitializeComponent();
 	}
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
 
-		Term term =AppData.GetTerm(TermId);
+        if (TermId == 0)
+            return;
 
-		if (term != null)
-		{
-			TermTitleLabel.Text = term.TermTitle;
-			StartDateLabel.Text = "Start: " + term.StartDate.ToShortDateString();
-			EndDateLabel.Text = "End: " + term.EndDate.ToShortDateString();
-		}
+        var allTerms = await Database.GetTermsAsync();
+        _term = allTerms.FirstOrDefault(t => t.Id == TermId);
 
-		var courses = AppData.GetCoursesForTerm(TermId);
-		CoursesCollection.ItemsSource = courses;
+        if (_term == null)
+            return;
+
+        var courses = await Database.GetCoursesByTermAsync(_term.Id);
+        CoursesCollection.ItemsSource = courses;
+
+        System.Diagnostics.Debug.WriteLine($"Loaded {_term.TermTitle} with {courses.Count} courses.");
     }
 
 	public async void OnAddCourseClicked(object sender, EventArgs e)
 	{
-		await Shell.Current.GoToAsync($"{nameof(AddEditCoursePage)}?termId={TermId}");
+        if (_term == null)
+            return;
+
+        await Shell.Current.GoToAsync($"{nameof(AddEditCoursePage)}?termId={TermId}");
 	}
 
     private async void OnCourseTapped(object sender, TappedEventArgs e)

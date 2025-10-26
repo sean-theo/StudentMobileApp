@@ -1,6 +1,7 @@
 using StudentMobileApp.Models;
 using StudentMobileApp.Data;
 
+
 namespace StudentMobileApp.Views;
 
 public partial class TermsListPage : ContentPage
@@ -8,15 +9,17 @@ public partial class TermsListPage : ContentPage
     public TermsListPage()
     {
         InitializeComponent();
-        TermsCollection.ItemsSource = AppData.Terms;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        TermsCollection.ItemsSource = null;
-        TermsCollection.ItemsSource = AppData.Terms;
-        System.Diagnostics.Debug.WriteLine($"Terms loaded: {AppData.Terms.Count}");
+
+        // load terms from the database
+        var terms = await Database.GetTermsAsync();
+        TermsCollection.ItemsSource = terms;
+
+        System.Diagnostics.Debug.WriteLine($"Terms loaded: {terms.Count}");
     }
 
     private async void OnAddTermClicked(object sender, EventArgs e)
