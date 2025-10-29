@@ -1,8 +1,8 @@
 pages:
   stage: deploy
   script:
-    - mkdir .public
-    - cp -r public/* .public/
+    - mkdir -p .public
+    - cp -r StudentMobileApp/public/* .public/ || cp -r public/* .public/
   artifacts:
     paths:
       - .public
@@ -10,3 +10,4 @@ pages:
     - main
     - master
     - working
+
