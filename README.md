@@ -1,29 +1,61 @@
-<strong>**DO NOT DISTRIBUTE OR PUBLICLY POST SOLUTIONS TO THESE LABS. MAKE ALL FORKS OF THIS REPOSITORY WITH SOLUTION CODE PRIVATE. PLEASE REFER TO THE STUDENT CODE OF CONDUCT AND ETHICAL EXPECTATIONS FOR COLLEGE OF INFORMATION TECHNOLOGY STUDENTS FOR SPECIFICS. **</strong>
+Student Mobile App
 
-# WESTERN GOVERNORS UNIVERSITY 
-## D424 – SOFTWARE ENGINEERING CAPSTONE
-Welcome to Software Engineering Capstone! This is an opportunity for students to develop full stack software engineering documentation and applications. They will execute documentation, unit testing, revision of software applications, and deploy software applications with scripts and containers on a cloud platform.
+A cross-platform .NET MAUI mobile application designed to help students organize and track academic terms, courses, and assessments.
+Built with a focus on clean UI, scalability, and maintainability.
 
-FOR SPECIFIC TASK INSTRUCTIONS AND REQUIREMENTS FOR THIS ASSESSMENT, PLEASE REFER TO THE COURSE PAGE.
-BASIC INSTRUCTIONS
-For this assessment, you will deploy your developed full stack software product to a web service of your choice.
+📱 Features
 
+Add, edit, and delete terms, courses, and assessments
 
-## SUPPLEMENTAL RESOURCES  
-1.	How to clone a project to IntelliJ using Git?
+Local SQLite database for persistent offline data
 
-> Ensure that you have Git installed on your system and that IntelliJ is installed using [Toolbox](https://www.jetbrains.com/toolbox-app/). Make sure that you are using version 2022.3.2. Once this has been confirmed, click the clone button and use the 'IntelliJ IDEA (HTTPS)' button. This will open IntelliJ with a prompt to clone the proejct. Save it in a safe location for the directory and press clone. IntelliJ will prompt you for your credentials. Enter in your WGU Credentials and the project will be cloned onto your local machine.  
+Form validation to ensure clean data entry
 
-2. How to create a branch and start Development?
+Search and reporting tools for quick lookup of academic data
 
-- GitLab method
-> Press the '+' button located near your branch name. In the dropdown list, press the 'New branch' button. This will allow you to create a name for your branch. Once the branch has been named, you can select 'Create Branch' to push the branch to your repository.
+Push notifications for upcoming course and assessment deadlines
 
-- IntelliJ method
-> In IntelliJ, Go to the 'Git' button on the top toolbar. Select the new branch option and create a name for the branch. Make sure checkout branch is selected and press create. You can now add a commit message and push the new branch to the local repo.
+Responsive, user-friendly design optimized for mobile
 
-## SUPPORT
-If you need additional support, please navigate to the course page and reach out to your course instructor.
+🛠️ Tech Stack
 
-## FUTURE USE
-Take this opportunity to create or add to a simple resume portfolio to highlight and showcase your work for future use in career search, experience, and education!
+.NET 8 (MAUI)
+
+C#
+
+SQLite-net ORM
+
+CommunityToolkit.MVVM
+
+Plugin.LocalNotification
+
+MVVM Architecture
+
+🚀 Highlights
+
+Clean, scalable architecture — easy to extend with new features or entities
+
+Clear separation between UI, data, and business logic layers
+
+Built following industry-appropriate validation and security best practices
+
+Deployed via GitLab CI/CD and hosted on GitLab Pages
+
+👤 Author
+
+Sean Theobald
+Software Engineer | Western Governors University Graduate
+LinkedIn
+ • GitHub
+
+🗂️ Repository Purpose
+
+This project was developed as part of a software engineering capstone and serves as a demonstration of:
+
+Full-stack mobile app development
+
+Data persistence and validation
+
+Automated CI/CD deployment
+
+Clean and maintainable code design
