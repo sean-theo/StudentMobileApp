@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="StudentMobileApp.Views.TermsListPage"
+             Title="My Terms">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="+ Add Term"
+                     Clicked="OnAddTermClicked" />
+    </ContentPage.ToolbarItems>
+    
+    <VerticalStackLayout Padding="20" Spacing="10">
+        
+        <Label 
+            Text="Academic Terms"
+            FontSize="24"
+            FontAttributes="Bold"
+            HorizontalOptions="Center" />
+
+        <CollectionView x:Name="TermsCollection">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BorderColor="LightGray"
+                           CornerRadius="8"
+                           Padding="10"
+                           Margin="0,5"
+                           BackgroundColor="White"
+                           HasShadow="False">
+                        
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTermTapped" />
+                        </Frame.GestureRecognizers>
+                        
+                        <VerticalStackLayout>
+                            <Label Text="{Binding TermTitle}" FontAttributes="Bold" />
+                            <Label Text="{Binding StartDate, StringFormat='Start: {0:MM/dd/yyyy}'}" />
+                            <Label Text="{Binding EndDate, StringFormat='End: {0:MM/dd/yyyy}'}" />
+                        </VerticalStackLayout>
+                        
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+                
+    </VerticalStackLayout>
+</ContentPage>

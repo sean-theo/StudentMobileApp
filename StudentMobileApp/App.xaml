@@ -1,0 +1,35 @@
+﻿<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="StudentMobileApp.App">
+    <Application.Resources>
+        <ResourceDictionary>
+
+            <!-- 🎨 App Accent Colors -->
+            <Color x:Key="PrimaryColor">#007ACC</Color>
+            <Color x:Key="SecondaryColor">#EAEAEA</Color>
+            <Color x:Key="ErrorColor">#D32F2F</Color>
+
+            <!-- 🔘 Button Styling -->
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="45" />
+            </Style>
+
+            <!-- 🏷️ Label Defaults -->
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+
+            <!-- ✏️ Entry Defaults -->
+            <Style TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{StaticResource SecondaryColor}" />
+                <Setter Property="Margin" Value="0,0,0,8" />
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

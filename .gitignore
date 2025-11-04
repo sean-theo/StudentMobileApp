@@ -1,0 +1,48 @@
+# Build directories
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# MAUI platform folders
+**/Platforms/Android/bin/
+**/Platforms/Android/obj/
+**/Platforms/iOS/bin/
+**/Platforms/iOS/obj/
+**/Platforms/MacCatalyst/bin/
+**/Platforms/MacCatalyst/obj/
+**/Platforms/Tizen/bin/
+**/Platforms/Tizen/obj/
+**/Platforms/Windows/bin/
+**/Platforms/Windows/obj/
+
+# Device / emulator settings
+*.apk
+*.aab
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+
+# Build artifacts
+*.dbmdl
+*.log
+*.tlog
+*.tmp
+*.cache
+*.pdb
+
+# User-specific files
+*.localhistory/
+*.DS_Store
+Thumbs.db
+
+# JetBrains Rider
+.idea/
+
+# Visual Studio workspace
+.vscode/
+.vsconfig

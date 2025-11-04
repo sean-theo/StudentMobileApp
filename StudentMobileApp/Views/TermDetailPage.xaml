@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="StudentMobileApp.Views.TermDetailPage"
+             Title="Term Details">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label 
+                x:Name="TermTitleLabel"
+                FontAttributes="Bold" 
+                FontSize="20"
+                HorizontalOptions="Center" />
+
+            <Label
+                x:Name="StartDateLabel"
+                FontSize="16" />
+
+            <Label
+                x:Name="EndDateLabel"
+                FontSize="16" />
+
+            <Button
+                Text="+ Add Course"
+                Clicked="OnAddCourseClicked"
+                HorizontalOptions="End" />
+
+            <CollectionView x:Name="CoursesCollection">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="0,5"
+                               BorderColor="LightGray"
+                               CornerRadius="8"
+                               HasShadow="False">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding CourseTitle}" FontAttributes="Bold" />
+                                <Label Text="{Binding StartDate, StringFormat='Start: {0:MM/dd/yyyy}'}" />
+                                <Label Text="{Binding EndDate, StringFormat='End: {0:MM/dd/yyyy}'}" />
+                            </VerticalStackLayout>
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    CommandParameter="{Binding Id}"
+                                    Tapped="OnCourseTapped" />
+                            </Frame.GestureRecognizers>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

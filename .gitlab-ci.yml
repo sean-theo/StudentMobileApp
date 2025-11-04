@@ -1,0 +1,13 @@
+pages:
+  stage: deploy
+  script:
+    - mkdir -p .public
+    - cp -r StudentMobileApp/public/* .public/ || cp -r public/* .public/
+  artifacts:
+    paths:
+      - .public
+  only:
+    - main
+    - master
+    - working
+

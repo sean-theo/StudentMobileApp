@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="StudentMobileApp.Views.AssessmentListPage"
+             Title="Assessments">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="+ Add Assessment"
+                     Clicked="OnAddAssessmentClicked" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+
+            <Label Text="Assessments for this Course"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <CollectionView x:Name="AssessmentsCollection"
+                            SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="LightGray"
+               CornerRadius="8"
+               Padding="10"
+               Margin="0,5"
+               BackgroundColor="White">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" FontAttributes="Bold" />
+                                <Label Text="{Binding Type}" />
+                                <Label Text="{Binding StartDate, StringFormat='Start: {0:MM/dd/yyyy}'}" />
+                                <Label Text="{Binding EndDate, StringFormat='End: {0:MM/dd/yyyy}'}" />
+
+                                <Button Text="Delete"
+                                        TextColor="White"
+                                        BackgroundColor="Red"
+                                        FontSize="14"
+                                        CornerRadius="6"
+                                        CommandParameter="{Binding Id}"
+                                        Clicked="OnDeleteAssessmentClicked"
+                                        HorizontalOptions="End" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

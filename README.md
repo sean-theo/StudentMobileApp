@@ -1,7 +1,6 @@
 Student Mobile App
 
-A cross-platform .NET MAUI mobile application designed to help students organize and track academic terms, courses, and assessments.
-Built with a focus on clean UI, scalability, and maintainability.
+A cross-platform .NET MAUI mobile application designed to help students organize and track academic terms, courses, and assessments. Built with a focus on clean UI, scalability, and maintainability.
 
 📱 Features
 
@@ -43,10 +42,7 @@ Deployed via GitLab CI/CD and hosted on GitLab Pages
 
 👤 Author
 
-Sean Theobald
-Software Engineer | Western Governors University Graduate
-LinkedIn
- • GitHub
+Sean Theobald Software Engineer | Western Governors University Graduate LinkedIn • GitHub
 
 🗂️ Repository Purpose
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="StudentMobileApp.Views.AddEditTermPage"
+             Title="Add / Edit Term">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            
+            <Label Text="Add / Edit Term"
+                   FontSize="24"
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" />
+
+            <Label Text="Term Title" />
+            <Entry x:Name="TitleEntry"
+                   Placeholder="Enter term title (e.g., Spring 2025" />
+
+            <Label Text="Start Date" />
+            <DatePicker x:Name="StartDatePicker"
+                        Format="MM/dd/yyyy" />
+
+            <Label Text="End Date" />
+            <DatePicker x:Name="EndDatePicker"
+                        Format="MM/dd/yyyy" />
+
+            <HorizontalStackLayout Spacing="12"
+                                   HorizontalOptions="Center">
+
+                <Button Text="Save Term"
+                        Clicked="OnSaveClicked"
+                        BackgroundColor="#2E8B57"
+                        TextColor="White"/>
+                <Button Text="Cancel"
+                        Clicked="OnCancelClicked"
+                        BackgroundColor="#B22222"
+                        TextColor="White" />
+            </HorizontalStackLayout>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
